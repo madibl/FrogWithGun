@@ -1,0 +1,9 @@
+﻿  Frog.cpp
+C:\Users\Student\Desktop\madil\FrogWithGun\Frog.cpp(36,15): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Platform.cpp
+  Generating Code...
+  FrogWithGun.vcxproj -> C:\Users\Student\Desktop\madil\FrogWithGun\x64\Debug\FrogWithGun.exe
