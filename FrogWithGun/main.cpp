@@ -4,9 +4,13 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include "SFML\Window.hpp"
+#include "SFML\System.hpp"
 #include <time.h>
 #include "Frog.h"
-#include "platform.h"
+#include "Platform.h"
+#include "Bullet.h"
+#include <math.h>
 
 
 using namespace sf;
@@ -20,6 +24,7 @@ struct point {
 int x;
 int y;
 int h;
+int prevy=-1;
 float dx;
 float dy; //change in y
 float yVelocity = 0.0f;
@@ -33,33 +38,48 @@ float calcJump() {
 
 //platform function
 bool onPlatform(Frog* frog, Platform* platform) {
-	if ((frog->getPosition().y == platform->getPlatPos().y)
-		&& (frog->getPosition().x < platform->getPlatPos().x && platform->getPlatPos().x < (frog->getPosition().x + 92))) {
+	if (prevy == -1 || prevy > platform->getPlatPos().y) return false;
+
+	std::cout << platform->getPlatPos().x << ", "<<platform->getPlatPos().y<<" "<<frog->getPosition().x<<", "<<frog->getPosition().y<< std::endl;
+	if ((frog->getPosition().y >= platform->getPlatPos().y)
+		&& (frog->getPosition().x < platform->getPlatPos().x && platform->getPlatPos().x < (frog->getPosition().x - 92))) {
 		return true;
 	}
+	return false;
 }
 
 
 //gravity function
 void gravity(Frog* frog, Platform* platform) {
-	if (frog->getPosition().y > 300 || onPlatform(frog, platform)) {
-		yVelocity = 0;
+	
+	/*if (frog->getPosition().y > 300 || onPlatform(frog, platform)) {
+		yVelocity = 0.0f;
 		frog->fall(300);
-		
+		std:: cout << "yVelocity = " << yVelocity << std::endl;
+	}*/
+
+	if (onPlatform(frog, platform)) {
+		yVelocity = 0;
+		frog->fall(platform->getPlatPos().y);
+		std::cout << "on platform " << y << std::endl;
 	}
-	else if (frog->getPosition().y != 300) {
+
+	else if (frog->getPosition().y > 300) { //below floor
+		yVelocity = 0.0f;
+		frog->fall(300);
+	}
+
+	else if (frog->getPosition().y < 300) { //above floor
 		yVelocity += 0.3f;
-		
+		frog->fall(y += yVelocity);
 	}
-	frog->fall(y += yVelocity);
 
+	else if (yVelocity!=0) { //on floor jumping
+		frog->fall(y + yVelocity);
+	}
+	 
+	
 
-}
-
-//jump
-void jump(Frog* frog) {
-	if (frog->getPosition().y == 300)
-	yVelocity = -10;
 }
 
 
@@ -129,6 +149,15 @@ int main()
 	int birdCount = 0;
 	float birdTimer = 0;
 
+	//vars for gun
+	Vector2f gunPoint;
+	Vector2f mousePosWindow;
+	Vector2f aimDir;
+	Vector2f aimDirNorm;
+
+
+
+
 	//other variables
 	bool movingRight = false;
 	bool movingLeft = false;
@@ -145,7 +174,7 @@ int main()
 				window.close();
 			}
 		}
-		calcJump();
+		//yVelocity = calcJump();
 		gravity(&frog, &platform);
 
 		sf::Vector2f viewMove(0, 0);
@@ -156,7 +185,7 @@ int main()
 			viewMove.x += 0.1f;
 	
 
-		std::cout << frog.getPosition().y << std::endl;
+		//std::cout << frog.getPosition().y << std::endl;
 		//move right
 		if (Keyboard::isKeyPressed(Keyboard::D)) {
 			frogSprite.setTexture(t1);
@@ -176,10 +205,27 @@ int main()
 		//jumping
 		if (Keyboard::isKeyPressed(Keyboard::W)) {
 			jumping = true;
-			jump(&frog);
+			if (frog.getPosition().y == 300) {
+				yVelocity = -10;
+				std::cout <<"jumping " << yVelocity << std::endl;
+			}
 		}
 
-		//landing on platforms loop
+
+
+		//bullets
+		//get end of gun where bullets shoot
+		gunPoint = Vector2f(frog.getPosition().x + 46, 23);
+		mousePosWindow = Vector2f(Mouse::getPosition(window));
+		aimDir = mousePosWindow - gunPoint;
+		//aimDirNorm = aimDir / (sqrt(pow(aimDir.x, 2) + pow(aimDir, 2)));
+
+		//std::cout << aimDirNorm.x << " " << aimDirNorm.y << "\n";
+
+
+
+		Bullet b1;
+
 		
 
 		//initialize clock to cycle through animation
@@ -209,14 +255,19 @@ int main()
 			birdclock.restart();
 		}
 
-		camera.move(viewMove);
-		window.setView(camera);
+
+
+		//draw things
+		//camera.move(viewMove);
+		//window.setView(camera);
 		window.clear();
 		window.draw(background);
 		window.draw(frogSprite);
 		window.draw(bird);
 		window.draw(mushroom);
 		window.display();
+		
+		prevy = frog.getPosition().y;
 	}
 
 }

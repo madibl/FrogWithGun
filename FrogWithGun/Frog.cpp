@@ -2,7 +2,7 @@
 #include "Frog.h"
 //#include "platform.h"
 
-Frog:: Frog(float startX, float startY, Sprite* associated) {
+Frog::Frog(float startX, float startY, Sprite* associated) {
 	position.x = startX;
 	position.y = startY;
 
@@ -32,7 +32,12 @@ void Frog::update() {
 	sprite->setPosition(position);
 }
 
-void Frog::fall(int y) {
+void Frog::fall(float y) {
 	position.y = y;
 	sprite->setPosition(position);
+}
+
+void Frog::jump(float &yVelocity) {
+	if (sprite->getPosition().y == 300)
+		yVelocity = -10;
 }

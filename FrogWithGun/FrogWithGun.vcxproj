@@ -138,6 +138,7 @@
     <ClCompile Include="Platform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Frog.h" />
     <ClInclude Include="bird.h" />
     <ClInclude Include="Platform.h" />

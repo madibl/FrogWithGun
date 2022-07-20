@@ -26,10 +26,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Frog.h">
+    <ClInclude Include="bird.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bird.h">
+    <ClInclude Include="Bullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Frog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Platform.h">

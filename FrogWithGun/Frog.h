@@ -18,8 +18,8 @@ public:
 
 	void moveLeft();
 	void moveRight();
-	void fall(int y);
-	void jump();
+	void fall(float y);
+	void jump(float &yVelocity);
 	void update();
 	//void gravity(Platform* platform);
 	//float calcJump();
