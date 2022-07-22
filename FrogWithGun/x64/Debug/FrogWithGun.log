@@ -1,13 +1,17 @@
 ﻿  main.cpp
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(33,11): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(34,7): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(35,9): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(74,19): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(74,16): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(270,29): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(40,11): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(41,7): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(42,9): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(92,20): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(92,17): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(238,27): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(137,8): warning C4101: 'plat': unreferenced local variable
-LINK : fatal error LNK1168: cannot open C:\Users\Student\Desktop\madil\FrogWithGun\x64\Debug\FrogWithGun.exe for writing
+C:\Users\Student\Desktop\madil\FrogWithGun\main.cpp(239,27): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  FrogWithGun.vcxproj -> C:\Users\Student\Desktop\madil\FrogWithGun\x64\Debug\FrogWithGun.exe

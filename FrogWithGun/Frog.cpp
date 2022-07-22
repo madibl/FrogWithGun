@@ -17,6 +17,9 @@ Vector2f Frog::getPosition() {
 	return sprite->getPosition();
 }
 
+FloatRect Frog::getGlobalBounds() {
+	return sprite->getGlobalBounds();
+}
 
 void Frog::moveLeft() {
 	position.x -= frogSpeed;
@@ -37,7 +40,10 @@ void Frog::fall(float y) {
 	sprite->setPosition(position);
 }
 
-void Frog::jump(float &yVelocity) {
-	if (sprite->getPosition().y == 300)
+void Frog::jump(float &yVelocity, bool onPlatform) {
+	
+	if (sprite->getPosition().y == 300 || onPlatform) {
 		yVelocity = -10;
+	}
+	
 }

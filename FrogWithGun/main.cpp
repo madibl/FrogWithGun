@@ -4,13 +4,18 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include "SFML\Window.hpp"
-#include "SFML\System.hpp"
+#include "SFML/Window.hpp"
+#include "SFML/System.hpp"
+#include "SFML/Graphics/Text.hpp"
 #include <time.h>
 #include "Frog.h"
 #include "Platform.h"
 #include "Bullet.h"
+#include "Bird.h"
 #include <math.h>
+#include <vector>
+#include <dos.h>
+#include <string>
 
 
 using namespace sf;
@@ -28,6 +33,8 @@ int prevy=-1;
 float dx;
 float dy; //change in y
 float yVelocity = 0.0f;
+int enemyLives = 1000;
+
 
 float calcJump() {
 	dy += 0.3;
@@ -37,16 +44,28 @@ float calcJump() {
 }
 
 //platform function
-bool onPlatform(Frog* frog, Platform* platform) {
+bool onPlatform(Frog* frog, Platform *platform) {
+	//std::cout << platform->getPlatPos().x << ", " << platform->getPlatPos().y << " " << frog->getPosition().x << ", " << frog->getPosition().y <<" " <<prevy<< std::endl;
+	/*
 	if (prevy == -1 || prevy > platform->getPlatPos().y) return false;
-
-	std::cout << platform->getPlatPos().x << ", "<<platform->getPlatPos().y<<" "<<frog->getPosition().x<<", "<<frog->getPosition().y<< std::endl;
+	if (frog->getPosition().y >= platform->getPlatPos().y) std::cout<<"true"<<std::endl;
 	if ((frog->getPosition().y >= platform->getPlatPos().y)
-		&& (frog->getPosition().x < platform->getPlatPos().x && platform->getPlatPos().x < (frog->getPosition().x - 92))) {
+		&& (frog->getPosition().x < platform->getPlatPos().x && platform->getPlatPos().x < (frog->getPosition().x + 92))) {
 		return true;
 	}
-	return false;
+	*/
+	if (yVelocity >=0 && frog->getGlobalBounds().intersects(platform->getGlobalBounds())) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
 }
+
+//bool hitsBird(Bird* bird, Bullet) {
+//	if (Bullet bullet.getPosition().intersects(bird))
+//}
 
 
 //gravity function
@@ -57,29 +76,26 @@ void gravity(Frog* frog, Platform* platform) {
 		frog->fall(300);
 		std:: cout << "yVelocity = " << yVelocity << std::endl;
 	}*/
+		if (onPlatform(frog, platform)) {
+			yVelocity = 0;
+			frog->fall(platform->getPlatPos().y);
+			std::cout << "on platform " << y << std::endl;
+		}
 
-	if (onPlatform(frog, platform)) {
-		yVelocity = 0;
-		frog->fall(platform->getPlatPos().y);
-		std::cout << "on platform " << y << std::endl;
-	}
+		else if (frog->getPosition().y > 300) { //below floor
+			yVelocity = 0.0f;
+			frog->fall(300);
+		}
 
-	else if (frog->getPosition().y > 300) { //below floor
-		yVelocity = 0.0f;
-		frog->fall(300);
-	}
+		else if (frog->getPosition().y < 300) { //above floor
+			yVelocity += 0.3f;
+			frog->fall(y += yVelocity);
+		}
 
-	else if (frog->getPosition().y < 300) { //above floor
-		yVelocity += 0.3f;
-		frog->fall(y += yVelocity);
-	}
-
-	else if (yVelocity!=0) { //on floor jumping
-		frog->fall(y + yVelocity);
-	}
+		else if (yVelocity != 0) { //on floor jumping
+			frog->fall(y + yVelocity);
+		}
 	 
-	
-
 }
 
 
@@ -91,7 +107,7 @@ int main()
 {
 	//create window
 	RenderWindow window(VideoMode(960, 540), "Frog with Gun");
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(45);
 	sf::View camera(sf::Vector2f(480, 270), sf::Vector2f(960, 540));
 	camera.setCenter(480,270);
 
@@ -102,6 +118,8 @@ int main()
 	t3.loadFromFile("Textures/mushPlat1.png");
 	t4.loadFromFile("Textures/background.png");
 	t5.loadFromFile("Textures/FrogWalkLeft.png");
+
+
 
 
 	//arays for frog animation
@@ -123,20 +141,39 @@ int main()
 
 
 	Sprite frogSprite;
+	frogSprite.setOrigin(0, 46);
 	Frog frog(5, 5, &frogSprite);
 	
-
-	Sprite bird;
-	bird.setTexture(t2);
-	bird.setTextureRect(birdRect[0]);
-	bird.setPosition(100, 100);
+	//enemy
+	Sprite birdSprite;
+	birdSprite.setTexture(t2);
+	birdSprite.setTextureRect(birdRect[0]);
+	birdSprite.setPosition(600, 200);
+	birdSprite.setScale(5, 5);
+	Bird bird(100, 100, &birdSprite);
 
 	Sprite mushroom;
 	mushroom.setTexture(t3);
 	mushroom.setPosition(200, 200);
-	point plat[20];
+
+
+	Sprite mushroom2;
+	mushroom2.setTexture(t3);
+	mushroom2.setPosition(400, 200);
+
+	Sprite mushroom3;
+	mushroom3.setTexture(t3);
+	mushroom3.setPosition(600, 200);
+
+
+
+	std::vector<Platform> platforms;
 
 	Platform platform(100, 200, &mushroom);
+	platforms.push_back(platform);
+	platforms.push_back(Platform(400, 200, &mushroom2));
+	platforms.push_back(Platform(600, 200, &mushroom3));
+	platforms.push_back(Platform(600, 200, &mushroom3));
 
 	Sprite background;
 	background.setTexture(t4);
@@ -165,6 +202,13 @@ int main()
 	bool idle = false;
 
 
+	Bullet b1;
+	std::vector<Bullet> bullets;
+
+	bullets.push_back(Bullet(b1));
+
+
+
 
 	//while loop to run program while window is open
 	while (window.isOpen()) {
@@ -175,14 +219,30 @@ int main()
 			}
 		}
 		//yVelocity = calcJump();
-		gravity(&frog, &platform);
+		for (int i = 0; i < platforms.size(); i++) {
+			gravity(&frog, &platforms[i]);
+		}
 
+		
 		sf::Vector2f viewMove(0, 0);
 
-		if (movingLeft)
-			viewMove.x -= 0.1f;
-		if (movingRight)
-			viewMove.x += 0.1f;
+
+		//bullets
+		//get end of gun where bullets shoot
+		//Length of Vector: |V| = sqrt(V.x ^2 + V.y^2)
+		//Normalize vector: U = V / |V|
+		gunPoint = Vector2f(frog.getPosition().x + 23, frog.getPosition().y - 23);
+		mousePosWindow = Vector2f(Mouse::getPosition(window));
+		aimDir = mousePosWindow - gunPoint;
+		//normalize vector? and get distance of vector
+		aimDirNorm.x = aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
+		aimDirNorm.y = aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
+
+		//possibly a camera
+		//if (movingLeft)
+		//	viewMove.x -= 0.1f;
+		//if (movingRight)
+		//	viewMove.x += 0.1f;
 	
 
 		//std::cout << frog.getPosition().y << std::endl;
@@ -203,30 +263,73 @@ int main()
 		}
 
 		//jumping
-		if (Keyboard::isKeyPressed(Keyboard::W)) {
-			jumping = true;
-			if (frog.getPosition().y == 300) {
+		if (Keyboard::isKeyPressed(Keyboard::Space)) {
+			//jumping = true;
+			for (int i = 0; i < platforms.size(); i++)
+			{
+				frog.jump(yVelocity, onPlatform(&frog, &platforms[i]));
+			}
+			/*if (frog.getPosition().y == 300) {
 				yVelocity = -10;
 				std::cout <<"jumping " << yVelocity << std::endl;
-			}
+			}*/
+		} 
+
+		//shooting
+		if (Mouse::isButtonPressed(Mouse::Left)) {
+			b1.bullet.setPosition(gunPoint);
+			b1.currVelocity = aimDirNorm * b1.maxSpeed;
+
+			bullets.push_back(Bullet(b1));
+
+		}
+
+		for (size_t i = 0; i < bullets.size(); i++) {
+
+			bullets[i].bullet.move(bullets[i].currVelocity);
 		}
 
 
 
-		//bullets
-		//get end of gun where bullets shoot
-		gunPoint = Vector2f(frog.getPosition().x + 46, 23);
-		mousePosWindow = Vector2f(Mouse::getPosition(window));
-		aimDir = mousePosWindow - gunPoint;
-		//aimDirNorm = aimDir / (sqrt(pow(aimDir.x, 2) + pow(aimDir, 2)));
-
-		//std::cout << aimDirNorm.x << " " << aimDirNorm.y << "\n";
 
 
+		//check if bird is alive
+		for (size_t i = 0; i < bullets.size(); i++) {
+			if (enemyLives > 0) {
+				
 
-		Bullet b1;
+				if (birdSprite.getGlobalBounds().contains(bullets[i].getPosition())/*bullets[i].bullet.getPosition().x == birdSprite.getPosition().x && bullets[i].bullet.getPosition().y == birdSprite.getPosition().y*/) {
+					enemyLives--;
+					bullets.erase(bullets.begin() + i);
+					std::cout << "-----------HIT!!------------" << std::endl;
 
+				}
+				std::cout << "enemy lives: " << enemyLives << " " << bird.isAlive(enemyLives) << std::endl;
+			}
 		
+			else {
+				birdSprite.setPosition(1000, 1000);
+				window.close();
+				std::cout << "CONGRATS YOU KILLED IT." << std:: endl;
+			}
+		}
+		
+		
+
+		//text
+		Text healthBar;
+		Font myFont;
+		myFont.loadFromFile("Textures/OpenSans-Bold.ttf");
+
+		std::string bossHealth = std::to_string(enemyLives);
+		healthBar.setFont(myFont);
+		healthBar.setString("Boss Bird Health: " + bossHealth);
+		healthBar.setCharacterSize(24);
+		healthBar.setFillColor(Color::White);
+		healthBar.setPosition(600, 200);
+
+
+
 
 		//initialize clock to cycle through animation
 		frogSprite.setTextureRect(frogRect[frogCount]);
@@ -243,7 +346,7 @@ int main()
 
 
 		//bird animation
-		bird.setTextureRect(birdRect[birdCount]);
+		birdSprite.setTextureRect(birdRect[birdCount]);
 		birdTimer = birdclock.getElapsedTime().asSeconds();
 		if (birdTimer > 0.1f) {
 			if (birdCount < 1) {
@@ -261,13 +364,46 @@ int main()
 		//camera.move(viewMove);
 		//window.setView(camera);
 		window.clear();
+		
 		window.draw(background);
 		window.draw(frogSprite);
-		window.draw(bird);
-		window.draw(mushroom);
-		window.display();
+
+		//loop to draw bullets in increments
+		for (size_t i = 0; i < bullets.size(); i++) {
+			window.draw(bullets[i].bullet);
+
+			if (bullets[i].bullet.getPosition().x < 0 || bullets[i].bullet.getPosition().x > window.getSize().x
+				|| bullets[i].bullet.getPosition().y < 0 || bullets[i].bullet.getPosition().y > window.getSize().y) {
+				bullets.erase(bullets.begin() + i);
+			}
+
+		}
+
+		//trying to move bird up and down
+		/*int moveY = 200;
+		if (birdSprite.getPosition() ) {
+			
+			moveY += 10;
+
+			birdSprite.setPosition(600, moveY);
+			
+
+		}
+		else if (birdSprite.getPosition().y > 0) {
+			moveY -= 10;
+			
+		}*/
+		window.draw(birdSprite);
 		
-		prevy = frog.getPosition().y;
+		/*for (Platform &p : platforms) {
+			window.draw(*p.spritePlat);
+		}*/
+		for (int i = 0; i < platforms.size(); i++) {
+			window.draw(*platforms[i].spritePlat);
+		}
+		//window.draw(mushroom);
+		window.draw(healthBar);
+		window.display();
 	}
 
 }
